@@ -8,12 +8,13 @@ class Data {
 }
 
 class UI {
-    static displayContact() {
-        const data1 = Store.getData1()
-        data1.forEach((data) => UI.addContactToList(data));
+    static displayData1() {
+        const data1 = Store.getData1();
+
+        data1.forEach((data) => UI.addDataToList(data));
     }
 
-    static addContactToList(data) {
+    static addDataToList(data) {
         const list = document.querySelector('#contact-list');
 
         const row = document.createElement('tr');
@@ -39,11 +40,11 @@ class UI {
         const div = document.createElement('div');
         div.className = `alert alert-${className}`;
         div.appendChild(document.createTextNode(message));
-        const container = document.querySelector('.container');
-        const form = document.querySelector('#contact-list');
-        container.insertBefore(div, form);
+        const con = document.querySelector('.con');
+        const form = document.querySelector('#my-form');
+        con.insertBefore(div, form);
 
-        setTimeout(() => document.querySelector('.alert').remove(), 3000);
+        setTimeout(() => document.querySelector('.alert').remove(), 3500);
     }
 
     static clearFields() {
@@ -67,59 +68,54 @@ class Store {
     }
 
     static addData(data) {
-        const data1 = Store.getData1();
-        data1.push(data);
-        localStorage.setItem('data1', JSON.stringify(data1));
+        const data2 = Store.getData1();
+        data2.push(data);
+        localStorage.setItem('data2', JSON.stringify(data2));
     }
 
-    static removeData(message) {
-        const data1 = Store.getData1();
+    static removeData(isbn) {
+        const data2 = Store.getData1();
 
-        data1.forEach((data, index) => {
-            if (data.message === message) {
-                data1.splice(index, 1);
+        data2.forEach((data, index) => {
+            if (data.isbn === isbn) {
+                data2.splice(index, 1);
             }
         });
 
-        localStorage.setItem('data1', JSON.stringify(data1));
+        localStorage.setItem('data2', JSON.stringify(data2));
     }
 }
 
-document.addEventListener('DOMContentLoaded', UI.displayContact);
-
-document.querySelector('#contact-list').addEventListener('submit', (e) => {
-   
-    e.preventDefault();
-
+document.addEventListener('DOMContentLoaded', UI.displayData1);
+  
+  document.querySelector('#my-form').addEventListener('submit', (e) => {
+   e.preventDefault();
+  
     const name = document.querySelector('#name').value;
     const tel = document.querySelector('#tel').value;
     const email = document.querySelector('#email').value;
     const message = document.querySelector('#message').value;
-    
-    if (name === '' || tel === '' || email === '' || message === '') {
-        UI.showAlert('Please fill in all fields', 'danger');
-        // console.log("1");
+  
+    // 12. Validate
+    if(name === '' || tel === '' || email === '' || message === '') {
+      UI.showAlert('Please fill in all fields', 'danger');
     } else {
-        
-        const data = new Data(name,tel,email,message);
-        //  console.log(data);
-
-        UI.addContactToList(data);
-
-        Store.addData(data);
-
-        UI.showAlert('Contact data Added', 'success');
-
-        UI.clearFields();
+      const data = new Data(name, tel, email,message);
+     
+      UI.addDataToList(data);
+  
+      Store.addData(data);
+  
+      UI.showAlert('Contact Added', 'success');
+  
+      UI.clearFields();
     }
-});
-
-document.querySelector('#contact-list').addEventListener('click', (e) => {
-    //  console.log(e.target);
-
+  });
+  
+  document.querySelector('#contact-list').addEventListener('click', (e) => {
+    
     UI.deleteData(e.target);
-
     Store.removeData(e.target.parentElement.previousElementSibling.textContent);
-
-    UI.showAlert('Contact data Removed', 'success');
-});
+  
+    UI.showAlert('Contact Removed', 'success');
+  });
